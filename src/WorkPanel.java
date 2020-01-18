@@ -41,7 +41,7 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 	private int startX=0;
 	private int startY=0;
 	private int c;
-	
+	private int id = -1;
 	public WorkPanel(LayoutManager layout) 
 	{
 		super(layout);
@@ -124,7 +124,8 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 	 @Override
 	 public void mouseClicked(MouseEvent e) 
 	 {
-		 System.out.print(c);
+		 //System.out.print(c);
+		 
 		 if (SampleImage.clicked) {
 	            c++;
 	            if (c == 1){
@@ -135,11 +136,13 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
                                 (e.getY() > atoms.get(i).getY()) && (e.getY() < atoms.get(i).getY() + 50)&&(c==1)) {
                         	p1=e.getPoint();
                         	flag1=false;
+                        	id=i;
                             break;
                         }
                         else flag1=true;
                     }
-	            	
+	            	if(atoms.size()==0)
+	            		flag1=true;
 	            } else {
 //	                myLine.setX2(e.getX());
 //	                myLine.setY2(e.getY());
@@ -151,10 +154,14 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
                                 (e.getY() > atoms.get(i).getY()) && (e.getY() < atoms.get(i).getY() + 50)&&(c==2)) {
                         	p2=e.getPoint();
                         	flag1=false;
+                        	if(id==i)
+                        		flag1=true;
                             break;
                         }
                         else flag1=true;
                     }
+	            	if(atoms.size()==0)
+	            		flag1=true;
 	            	if(flag1==true)
 	            	{
 	            		p2=e.getPoint();

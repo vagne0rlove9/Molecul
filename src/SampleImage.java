@@ -56,9 +56,10 @@ public class SampleImage extends JFrame {
     Box buttonBox;
     public SampleImage() {
     	//this.setLayout(null);
-    	f = new JFrame();
+    	f = new JFrame("Molecular designer");
         f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         f.setSize(500, 500);
+        f.setLocationRelativeTo(null); 
 //        panel = new JPanel();
 //        
 //        //panel.setBackground(Color.BLUE);
