@@ -42,6 +42,7 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 	private int startY=0;
 	private int c;
 	private int id = -1;
+	private int linkId1,linkId2;
 	public WorkPanel(LayoutManager layout) 
 	{
 		super(layout);
@@ -137,6 +138,7 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
                         	p1=e.getPoint();
                         	flag1=false;
                         	id=i;
+                        	linkId1=i;
                             break;
                         }
                         else flag1=true;
@@ -154,6 +156,7 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
                                 (e.getY() > atoms.get(i).getY()) && (e.getY() < atoms.get(i).getY() + 50)&&(c==2)) {
                         	p2=e.getPoint();
                         	flag1=false;
+                        	linkId2=i;
                         	if(id==i)
                         		flag1=true;
                             break;
@@ -171,7 +174,8 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 		            	p1.x=0;
 		            	p1.y=0;
 	            	}
-	            	
+	            	atoms.get(linkId1).addLink(linkId2);
+	            	atoms.get(linkId2).addLink(linkId1);
 	                Line ln = new Line(p1,p2);
 	                //elements.add(ln);
 	                lines.add(ln);
@@ -229,16 +233,62 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 	            }
 	 }
 	 
+	 public String check()
+	 {
+		 if(atoms.size()>3)
+			 return "Удалите лишние атомы";
+		 if(atoms.size()<3)
+			 return "Добавьте атомы";
+		 if((lines.size()<2))
+			 return "Добавьте связи";
+		 if((lines.size()>2))
+			 return "Удалите лишние связи";
+		 int countO=0,countH=0,idO = 0;
+		 int []idH= {0,0};
+		 for (int i = atoms.size() - 1; i >= 0; i--) 
+		 {
+             if(atoms.get(i).getPath().equals("H.png"))
+             {
+            	 idH[countH]=i;
+            	 countH++;        
+             }
+             if(atoms.get(i).getPath().equals("O.png"))
+             {
+            	 countO++;
+            	 idO=i;            	 
+             }
+             if((countO==1)&&(countH==2))
+             {
+            	 String []s=atoms.get(idO).getLink().split(" ");
+            	 String []s1=atoms.get(idH[0]).getLink().split(" ");
+            	 String []s2=atoms.get(idH[1]).getLink().split(" ");
+            	 if((s.length==2)&&(!s[0].equals(s[1]))&&(Integer.valueOf(s1[0])==idO)&&(Integer.valueOf(s2[0])==idO)&&(s1.length==1)
+            			 &&(s2.length==1))
+            		 return "Это вода!";
+            	 else return"Ошибка!";
+             }
+         }
+		 return "0";
+	 }
+	 
 	 public String save(String name) 
 	 {
 		 Date date=new Date();
 		 try
 	        {
-			 File file = new File("save/"+name+".txt");
-			 FileWriter writer;
+			 	File folder=new File("save");
+			 	if(!folder.exists())
+				 	folder.mkdir();
+			 	if(name==null)
+			 		return "Введите имя файла!";
+			 	if(name.equals(""))
+			 		return "Введите имя файла!";
+			 	File file = new File(folder.getName()+"/"+name+".txt");
+			 	FileWriter writer;
+			 	
 			 	if(file.exists())
 			 		return "Такой файл уже существует, введите другое имя!";
-			 	else writer = new FileWriter("save/"+name+".txt", false);
+			 	else writer = new FileWriter(folder.getName()+"/"+name+".txt", false);
 	           // запись всей строки
 	            String text = "atoms\r\n";
 	            //for(int i=0;i<lines.size();i++)
@@ -261,18 +311,28 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 	    		}
 	            writer.write(text);
 	            writer.flush();
+	            writer.close();
 	        }
 	        catch(IOException ex){
 	        	System.out.println(ex.getMessage());
 	        	return ex.getMessage();
 	        } 
+		 
 		 return "Молекула сохранена!";
 	 }
 
 	 public String load(String name) 
 	 {
 		 try {
-	            File file = new File("save/"+name+".txt");
+			 File folder=new File("save");
+			 	if(!folder.exists())
+			 		return "Сохранений нет!";
+			 	
+			 	if(name==null)
+			 		return "Введите имя файла!";
+			 	if(name.equals(""))
+			 		return "Введите имя файла!";
+			 	File file = new File(folder.getName()+"/"+name+".txt");
 	            
 	            //создаем объект FileReader для объекта File
 	            FileReader fr = new FileReader(file);
@@ -329,6 +389,8 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 	                line = reader.readLine();
 	                
 	            }
+	            reader.close();
+	            fr.close();
 	        } catch (FileNotFoundException e) {
 	            //e.printStackTrace();
 	            return e.getMessage();

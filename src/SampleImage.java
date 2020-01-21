@@ -53,6 +53,7 @@ public class SampleImage extends JFrame {
     JButton buttonLine;
     JButton buttonSave;
     JButton buttonLoad;
+    JButton buttonCheck;
     Box buttonBox;
     public SampleImage() {
     	//this.setLayout(null);
@@ -149,6 +150,7 @@ public class SampleImage extends JFrame {
         buttonLine = new JButton("Create Line");
         buttonSave = new JButton("Save");
         buttonLoad = new JButton("Load");
+        buttonCheck = new JButton("Check");
         buttonH.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
             	workPanel.addH(200,200);
@@ -182,8 +184,7 @@ public class SampleImage extends JFrame {
         buttonSave.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
             	String res=JOptionPane.showInputDialog("¬ведите название файла");
-            	String ans="";
-            	ans=workPanel.save(res);
+            	String ans=workPanel.save(res);
             	JOptionPane.showMessageDialog(f,ans);
             	
             }
@@ -191,10 +192,15 @@ public class SampleImage extends JFrame {
         buttonLoad.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
             	String res=JOptionPane.showInputDialog("¬ведите название файла");
-            	String ans="";
-            	ans=workPanel.load(res);
+            	String ans=workPanel.load(res);
             	JOptionPane.showMessageDialog(f,ans);
             	
+            }
+        });
+        buttonCheck.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+            	String ans=workPanel.check();
+            	JOptionPane.showMessageDialog(f,ans);
             }
         });
         buttonLine.addMouseListener(new MouseAdapter() {
@@ -212,6 +218,7 @@ public class SampleImage extends JFrame {
         buttonBox.add(buttonLine);
         buttonBox.add(buttonSave);
         buttonBox.add(buttonLoad);
+        //buttonBox.add(buttonCheck);
         f.add(BorderLayout.WEST, buttonBox);
         f.pack();
         //panel.setOpaque(false);

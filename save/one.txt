@@ -1,3 +1,0 @@
-atoms
-O.png 200 200 
-lines
