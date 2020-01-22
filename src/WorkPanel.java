@@ -32,10 +32,15 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 	private ArrayList<Atom> atoms;
 	private ArrayList<Line> lines;
 	private Point p1,p2;
+	private boolean click=false;
 	private int prevX;
 	private int prevY;
+	private int point;
+	private int prevLineX;
+	private int prevLineY;
 	private boolean flag1=false,flag2=false;
 	private int index;
+	private int indexLine;
 	private boolean flag=true;
 	private JButton but;
 	private int startX=0;
@@ -174,11 +179,16 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 		            	p1.x=0;
 		            	p1.y=0;
 	            	}
-	            	atoms.get(linkId1).addLink(linkId2);
-	            	atoms.get(linkId2).addLink(linkId1);
+	            	//atoms.get(linkId1).addLink(linkId2);
+	            	//atoms.get(linkId2).addLink(linkId1);
+	            	
 	                Line ln = new Line(p1,p2);
 	                //elements.add(ln);
+	                ln.addAtoms(linkId1, linkId2);
 	                lines.add(ln);
+	                atoms.get(linkId1).addLink(lines.size()-1);
+	                atoms.get(linkId2).addLink(lines.size()-1);
+	                
 	                c = 0;
 	                repaint();
 	            }
@@ -403,16 +413,48 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 	 
 	    @Override
 	    public void mousePressed(MouseEvent e) {
+	    	for (int i = atoms.size() - 1; i >= 0; i--) {
+	             if ((e.getX() > atoms.get(i).getX()) && (e.getX() < atoms.get(i).getX() + 50) &&
+	                     (e.getY() > atoms.get(i).getY()) && (e.getY() < atoms.get(i).getY() + 50)) {
+	             	click=true;
+	                break;
+	             }
+	             else click=false;
+	         }
 	        for (int i = atoms.size() - 1; i >= 0; i--) {
 	            if ((e.getX() > atoms.get(i).getX()) && (e.getX() < atoms.get(i).getX() + 50) &&
 	                    (e.getY() > atoms.get(i).getY()) && (e.getY() < atoms.get(i).getY() + 50)) {
 	                prevX = atoms.get(i).getX() - e.getX();
 	                prevY = atoms.get(i).getY() - e.getY();
+	                if((atoms.get(i).getX()!=prevX)&&(atoms.get(i).getY()!=prevY))
+		                if(atoms.get(i).getLines().size()!=0)
+		                {
+			                ArrayList<Integer> l=atoms.get(i).getLines();
+			                if(lines.size()!=0)
+			                {
+			                	int point1=lines.get(l.get(0)).checkPoint(i);
+			                	point=point1;
+				                if(point1==0)
+				                {
+				                	prevLineX = lines.get(l.get(0)).getX1() - e.getX();
+					                prevLineY = lines.get(l.get(0)).getY1() - e.getY();
+				                }
+				                if(point1==1)
+				                {
+				                	prevLineX = lines.get(l.get(0)).getX2() - e.getX();
+					                prevLineY = lines.get(l.get(0)).getY2() - e.getY();
+				                }
+				                indexLine = l.get(0);
+			                }
+			                if(lines.size()!=0)
+		                    	updateLocationLine(e,point);
+		                }
 	                index = i;
 	                //Component c = e.getComponent();
 	                //if (c instanceof Atom) {
 	                    updateLocation(e);
 	                //}
+	                    
 	                break;
 	            }
 	        }
@@ -427,6 +469,9 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 	                //if (c instanceof Atom) {
 	                    updateLocation(e);
 	               // }
+	                    if(atoms.get(i).getLines().size()!=0)
+		                    if(lines.size()!=0)
+		                    	updateLocationLine(e,point);
 	                break;
 	            }
 	        }
@@ -447,7 +492,12 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 	        for (int i = atoms.size() - 1; i >= 0; i--) {
 	            if ((e.getX() > atoms.get(i).getX()) && (e.getX() < atoms.get(i).getX() + 50) &&
 	                    (e.getY() > atoms.get(i).getY()) && (e.getY() < atoms.get(i).getY() + 50)) {
-	                updateLocation(e);
+	            	//if(click)
+	            		updateLocation(e);
+	                //ArrayList<Integer> l=atoms.get(i).getLines();
+	                if(atoms.get(i).getLines().size()!=0)
+	                    if(lines.size()!=0)
+	                    	updateLocationLine(e,point);
 	                break;
 	            }
 	        }
@@ -465,6 +515,20 @@ public class WorkPanel extends JPanel implements MouseListener, MouseMotionListe
 
 	    private void updateLocation(MouseEvent e) {
 	        atoms.get(index).setLocation(prevX + e.getX(), prevY + e.getY());
+	        repaint();
+	    }
+	    private void updateLocationLine(MouseEvent e,int flag) {
+	        //lines.get(indexLine).setLocation(prevLineX + e.getX(), prevLineY + e.getY());
+	    	if(flag==0)
+	    	{
+	    		lines.get(indexLine).setX1(prevLineX + e.getX());
+	    		lines.get(indexLine).setY1(prevLineY + e.getY());
+	    	}
+	    	if(flag==1)
+	    	{
+	    		lines.get(indexLine).setX2(prevLineX + e.getX());
+	    		lines.get(indexLine).setY2(prevLineY + e.getY());
+	    	}
 	        repaint();
 	    }
 	
